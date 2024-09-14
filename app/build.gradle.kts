@@ -45,4 +45,8 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+
+    implementation("com.otaliastudios.opengl:egloo:0.6.1")
+    implementation("org.joml:joml:1.10.8")
+
 }
