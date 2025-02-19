@@ -1,4 +1,4 @@
-package com.lyell.opengllearn
+package com.lyell.opengllearn.utils
 
 import android.content.Context
 import android.content.res.Resources
