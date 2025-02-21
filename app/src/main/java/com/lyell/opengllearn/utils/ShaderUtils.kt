@@ -1,54 +1,74 @@
 package com.lyell.opengllearn.utils
 
-import android.opengl.GLES30
+import android.opengl.GLES20.GL_COMPILE_STATUS
+import android.opengl.GLES20.GL_FRAGMENT_SHADER
+import android.opengl.GLES20.GL_LINK_STATUS
+import android.opengl.GLES20.GL_VERTEX_SHADER
+import android.opengl.GLES20.glAttachShader
+import android.opengl.GLES20.glCompileShader
+import android.opengl.GLES20.glCreateProgram
+import android.opengl.GLES20.glCreateShader
+import android.opengl.GLES20.glDeleteProgram
+import android.opengl.GLES20.glDeleteShader
+import android.opengl.GLES20.glGetProgramInfoLog
+import android.opengl.GLES20.glGetProgramiv
+import android.opengl.GLES20.glGetShaderInfoLog
+import android.opengl.GLES20.glGetShaderiv
+import android.opengl.GLES20.glLinkProgram
+import android.opengl.GLES20.glShaderSource
+import android.opengl.GLES20.glValidateProgram
 
 object ShaderUtils {
     // 加载并编译着色器
-    fun loadShader(type: Int, shaderCode: String): Int {
+    private fun compileShader(type: Int, shaderCode: String): Int {
         // 创建着色器
-        val shader = GLES30.glCreateShader(type)
+        val shader = glCreateShader(type)
         // 加载着色器源码
-        GLES30.glShaderSource(shader, shaderCode)
+        glShaderSource(shader, shaderCode)
         // 编译着色器
-        GLES30.glCompileShader(shader)
+        glCompileShader(shader)
         // 检查编译状态
         val compiled = IntArray(1)
-        GLES30.glGetShaderiv(shader, GLES30.GL_COMPILE_STATUS, compiled, 0)
+        glGetShaderiv(shader, GL_COMPILE_STATUS, compiled, 0)
         if (compiled[0] == 0) {
-            val error = GLES30.glGetShaderInfoLog(shader)
-            GLES30.glDeleteShader(shader)
+            val error = glGetShaderInfoLog(shader)
+            glDeleteShader(shader)
             throw RuntimeException("Shader compile error: $error")
         }
         return shader
     }
 
+    fun compileVertexShader(shader: String) = compileShader(GL_VERTEX_SHADER, shader)
+
+    fun compileFragmentShader(shader: String) = compileShader(GL_FRAGMENT_SHADER, shader)
+
     // 创建着色器程序
     fun createProgram(vertexSource: String, fragmentSource: String): Int {
         // 加载顶点着色器和片段着色器
-        val vertexShader = loadShader(GLES30.GL_VERTEX_SHADER, vertexSource)
-        val fragmentShader = loadShader(GLES30.GL_FRAGMENT_SHADER, fragmentSource)
+        val vertexShader = compileVertexShader(vertexSource)
+        val fragmentShader = compileFragmentShader(fragmentSource)
 
         // 创建程序
-        val program = GLES30.glCreateProgram()
+        val programId = glCreateProgram()
         // 附加着色器
-        GLES30.glAttachShader(program, vertexShader)
-        GLES30.glAttachShader(program, fragmentShader)
+        glAttachShader(programId, vertexShader)
+        glAttachShader(programId, fragmentShader)
         // 链接程序
-        GLES30.glLinkProgram(program)
+        glLinkProgram(programId)
 
         // 检查链接状态
         val linked = IntArray(1)
-        GLES30.glGetProgramiv(program, GLES30.GL_LINK_STATUS, linked, 0)
+        glGetProgramiv(programId, GL_LINK_STATUS, linked, 0)
         if (linked[0] == 0) {
-            val error = GLES30.glGetProgramInfoLog(program)
-            GLES30.glDeleteProgram(program)
+            val error = glGetProgramInfoLog(programId)
+            glDeleteProgram(programId)
             throw RuntimeException("Program link error: $error")
         }
 
         // 删除着色器，它们已经链接到程序中
-        GLES30.glDeleteShader(vertexShader)
-        GLES30.glDeleteShader(fragmentShader)
+        glDeleteShader(vertexShader)
+        glDeleteShader(fragmentShader)
 
-        return program
+        return programId
     }
 }

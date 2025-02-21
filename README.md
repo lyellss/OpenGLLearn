@@ -55,3 +55,8 @@ Android OpenGL 的学习路线：
 3. 多查看 OpenGL ES 官方文档
 4. 结合实际项目练习
 5. 注意性能优化
+
+相关资料：
+https://registry.khronos.org/OpenGL/
+
+Android 卷 56 页

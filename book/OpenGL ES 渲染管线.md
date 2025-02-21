@@ -144,3 +144,84 @@ OpenGL ES 的基本图形元素包括点、线、三角形，它们是构建复�
 1. 三角形永远是平面
 2. 任何多边形都可以分解为三角形
 3. 硬件对三角形渲染优化最好
+
+## 顶点着色器 和 片元着色器
+
+让我详细解释一下 OpenGL 中的顶点着色器（Vertex Shader）和片元着色器（Fragment Shader）：
+
+### 顶点着色器（Vertex Shader）
+
+1. **功能定位**：
+    - 处理每个顶点的数据
+    - 是渲染管线中第一个可编程的阶段
+
+2. **主要任务**：
+    - 坐标转换（模型、视图、投影变换）
+    - 顶点数据计算（位置、法线、纹理坐标等）
+    - 输出 gl_Position（必须，表示顶点的最终位置）
+
+3. **示例代码**：
+
+```glsl
+// 顶点着色器示例
+attribute vec4 a_Position;  // 输入顶点位置
+uniform mat4 u_Matrix;      // 变换矩阵
+
+void main() {
+    gl_Position = u_Matrix * a_Position;  // 计算顶点最终位置
+}
+```
+
+### 片元着色器（Fragment Shader）
+
+1. **功能定位**：
+    - 处理每个像素（片元）的数据
+    - 在光栅化之后执行
+
+2. **主要任务**：
+    - 计算每个像素的最终颜色
+    - 处理纹理采样
+    - 实现光照效果
+    - 输出 gl_FragColor（片元的最终颜色）
+
+3. **示例代码**：
+
+```glsl
+// 片元着色器示例
+precision mediump float;    // 精度限定符
+uniform vec4 u_Color;       // 统一颜色
+
+void main() {
+    gl_FragColor = u_Color;  // 设置片元颜色
+}
+```
+
+### 两者的关系
+
+1. **数据流向**：
+    - 顶点着色器 → 图元组装 → 光栅化 → 片元着色器
+
+2. **数据传递**：
+    - 可以通过 varying 变量从顶点着色器传递数据到片元着色器
+    - 片元着色器会对这些数据进行插值处理
+
+3. **使用示例**：
+
+```glsl
+// 顶点着色器
+attribute vec4 a_Position;
+varying vec4 v_Color;      // 声明 varying 变量
+
+void main() {
+    gl_Position = a_Position;
+    v_Color = vec4(1.0, 0.0, 0.0, 1.0);  // 传递红色
+}
+
+// 片元着色器
+precision mediump float;
+varying vec4 v_Color;      // 接收 varying 变量
+
+void main() {
+    gl_FragColor = v_Color;  // 使用插值后的颜色
+}
+```

@@ -1,6 +1,7 @@
 package com.lyell.opengllearn
 
 import android.app.Application
+import com.lyell.opengllearn.component.GLLogger
 
 open class MyApplication : Application() {
 
@@ -11,5 +12,6 @@ open class MyApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         instance = this
+        GLLogger.debugInit()
     }
 }
