@@ -9,7 +9,6 @@ import android.opengl.GLES20.GL_TRIANGLES
 import android.opengl.GLES20.glClear
 import android.opengl.GLES20.glClearColor
 import android.opengl.GLES20.glDrawArrays
-import android.opengl.GLES20.glDrawElements
 import android.opengl.GLES20.glEnableVertexAttribArray
 import android.opengl.GLES20.glGetAttribLocation
 import android.opengl.GLES20.glGetUniformLocation
@@ -20,7 +19,7 @@ import android.opengl.GLES20.glViewport
 import android.opengl.GLSurfaceView
 import com.lyell.opengllearn.R
 import com.lyell.opengllearn.component.logger
-import com.lyell.opengllearn.utils.GLSLUtils.readStringFromRaw
+import com.lyell.opengllearn.utils.GLSLUtils
 import com.lyell.opengllearn.utils.ShaderUtils
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
@@ -80,8 +79,9 @@ class LearnGLRender(
      */
     override fun onSurfaceCreated(gl: GL10?, config: EGLConfig?) {
         glClearColor(0.0f, 0.0f, 0.0f, 0.0f)
-        val vertexShaderSource = context.readStringFromRaw(R.raw.simple_vertex_shader)
-        val fragmentShaderSource = context.readStringFromRaw(R.raw.simple_fragment_shader)
+        val vertexShaderSource = GLSLUtils.readStringFromRaw(context, R.raw.simple_vertex_shader)
+        val fragmentShaderSource =
+            GLSLUtils.readStringFromRaw(context, R.raw.simple_fragment_shader)
         val programId = ShaderUtils.createProgram(vertexShaderSource, fragmentShaderSource)
         glUseProgram(programId)
         uColorLocation = glGetUniformLocation(programId, "u_Color")

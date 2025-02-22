@@ -1,21 +1,19 @@
 package com.lyell.opengllearn
 
 import android.os.Bundle
+import android.view.View
+import android.view.ViewGroup
 import android.widget.LinearLayout
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import com.lyell.opengllearn.view.LearnGLSurfaceView
+import com.lyell.opengllearn.practice.PracticeGLSurfaceView
 
 class MainActivity : AppCompatActivity() {
 
     private val mainLayout by lazy {
         findViewById<LinearLayout>(R.id.main)
-    }
-
-    private val glView: LearnGLSurfaceView by lazy {
-        findViewById(R.id.glView)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -27,15 +25,23 @@ class MainActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+        val view = PracticeGLSurfaceView(this)
+        addViewToMain(view)
     }
 
     override fun onPause() {
         super.onPause()
-        glView.onPause()
     }
 
     override fun onResume() {
         super.onResume()
-        glView.onResume()
+    }
+
+    private fun addViewToMain(view: View) {
+        mainLayout.addView(
+            view,
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.MATCH_PARENT
+        )
     }
 }

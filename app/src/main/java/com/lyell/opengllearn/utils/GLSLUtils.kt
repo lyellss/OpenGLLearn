@@ -9,10 +9,10 @@ import java.io.InputStreamReader
 
 object GLSLUtils {
 
-    fun Context.readStringFromRaw(@RawRes resId: Int): String {
+    fun readStringFromRaw(context: Context, @RawRes resId: Int): String {
         return runCatching {
             val builder = StringBuilder()
-            val reader = BufferedReader(InputStreamReader(resources.openRawResource(resId)))
+            val reader = BufferedReader(InputStreamReader(context.resources.openRawResource(resId)))
             var nextLine: String? = reader.readLine()
             while (nextLine != null) {
                 builder.append(nextLine).append("\n")
