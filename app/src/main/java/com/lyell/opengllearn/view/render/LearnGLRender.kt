@@ -61,9 +61,9 @@ class LearnGLRender(
         0f, 0.25f,
     )
 
-    private var uColorLocation: Int = 0
+    private var uColor: Int = 0
 
-    private var aPositionLocation: Int = 0
+    private var aPosition: Int = 0
 
     private val vertexData: FloatBuffer =
         ByteBuffer.allocateDirect(tableVerticesWithTriangles.size * BYTES_PER_FLOAT)
@@ -84,22 +84,22 @@ class LearnGLRender(
             GLSLUtils.readStringFromRaw(context, R.raw.simple_fragment_shader)
         val programId = ShaderUtils.createProgram(vertexShaderSource, fragmentShaderSource)
         glUseProgram(programId)
-        uColorLocation = glGetUniformLocation(programId, "u_Color")
-        logger.d("onSurfaceCreated: uColorLocation=$uColorLocation")
-        aPositionLocation = glGetAttribLocation(programId, "a_Position")
-        logger.d("onSurfaceCreated: aPositionLocation=$aPositionLocation")
+        uColor = glGetUniformLocation(programId, "u_Color")
+        logger.d("onSurfaceCreated: uColorLocation=$uColor")
+        aPosition = glGetAttribLocation(programId, "a_Position")
+        logger.d("onSurfaceCreated: aPositionLocation=$aPosition")
 
         // 将数据缓冲区的指正移动到0
         vertexData.position(0)
         glVertexAttribPointer(
-            aPositionLocation,
+            aPosition,
             POSITION_COMPONENT_COUNT,
             GL_FLOAT,
             false,
             0,
             vertexData
         )
-        glEnableVertexAttribArray(aPositionLocation)
+        glEnableVertexAttribArray(aPosition)
     }
 
     override fun onSurfaceChanged(gl: GL10?, width: Int, height: Int) {
@@ -111,16 +111,16 @@ class LearnGLRender(
         // 调用该代码后，清空屏幕，并用 glClearColor 的颜色填充屏幕
         glClear(GL_COLOR_BUFFER_BIT)
 
-        glUniform4f(uColorLocation, 1.0f, 1.0f, 1.0f, 1.0f)
+        glUniform4f(uColor, 1.0f, 1.0f, 1.0f, 1.0f)
         glDrawArrays(GL_TRIANGLES, 0, 6)
 
-        glUniform4f(uColorLocation, 1.0f, 0.0f, 0.0f, 1.0f)
+        glUniform4f(uColor, 1.0f, 0.0f, 0.0f, 1.0f)
         glDrawArrays(GL_LINES, 6, 2)
 
-        glUniform4f(uColorLocation, 0.0f, 0.0f, 1.0f, 1.0f)
+        glUniform4f(uColor, 0.0f, 0.0f, 1.0f, 1.0f)
         glDrawArrays(GL_POINTS, 8, 1)
 
-        glUniform4f(uColorLocation, 1.0f, 0.0f, 0.0f, 1.0f)
+        glUniform4f(uColor, 1.0f, 0.0f, 0.0f, 1.0f)
         glDrawArrays(GL_POINTS, 9, 1)
     }
 }

@@ -73,3 +73,48 @@ glUniformMatrix4fv(location, count, transpose, matrix)
     - 光照参数
     - 全局颜色
     - 时间等动画参数
+
+# `varying` 是 GLSL 中用于在顶点着色器和片段着色器之间传递数据的变量修饰符。
+
+工作原理：
+
+1. 在顶点着色器中声明并赋值
+2. 在片段着色器中声明并使用
+3. OpenGL 会自动对顶点之间的值进行插值
+
+示例：
+
+```glsl
+// 顶点着色器
+attribute vec4 a_Position;
+varying vec4 v_Color;     // 声明并赋值
+
+void main() {
+    gl_Position = a_Position;
+    v_Color = vec4(1.0, 0.0, 0.0, 1.0);  // 设置红色
+}
+
+// 片段着色器
+precision mediump float;
+varying vec4 v_Color;     // 接收插值后的颜色
+
+void main() {
+    gl_FragColor = v_Color;
+}
+```
+
+特点：
+
+1. 只读：片段着色器中不能修改 varying 变量
+2. 插值：在图元内部自动进行线性插值
+3. 类型匹配：顶点和片段着色器中的声明必须完全一致
+4. 性能影响：使用过多 varying 变量会影响性能
+
+常见用途：
+
+1. 传递颜色
+2. 传递纹理坐标
+3. 传递法线
+4. 传递光照计算结果
+
+注意：在 OpenGL ES 3.0 中，`varying` 关键字被 `in/out` 替代。

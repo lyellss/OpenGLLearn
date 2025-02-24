@@ -3,7 +3,8 @@ package com.lyell.opengllearn.practice
 import android.content.Context
 import android.opengl.GLSurfaceView
 import android.util.AttributeSet
-import com.lyell.opengllearn.practice.render.PracticeRender
+import com.lyell.opengllearn.practice.render.Render4
+import com.lyell.opengllearn.practice.render.Render5
 
 class PracticeGLSurfaceView @JvmOverloads constructor(
     context: Context,
@@ -12,7 +13,7 @@ class PracticeGLSurfaceView @JvmOverloads constructor(
 
     init {
         setEGLContextClientVersion(2)
-        setRenderer(PracticeRender(context))
+        setRenderer(Render5(context))
         renderMode = RENDERMODE_WHEN_DIRTY
     }
 }

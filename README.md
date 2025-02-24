@@ -59,4 +59,4 @@ Android OpenGL 的学习路线：
 相关资料：
 https://registry.khronos.org/OpenGL/
 
-Android 卷 56 页
+Android 卷  77 页

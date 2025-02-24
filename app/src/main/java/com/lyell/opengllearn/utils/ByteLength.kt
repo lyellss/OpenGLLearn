@@ -5,11 +5,11 @@ package com.lyell.opengllearn.utils
  */
 object ByteLength {
 
-    val FLOAT_TYPE: Int = 4
+    const val FLOAT_TYPE: Int = 4
 
-    val DOUBLE_TYPE: Int = 8
+    const val DOUBLE_TYPE: Int = 8
 
-    val INT_TYPE: Int = 4
+    const val INT_TYPE: Int = 4
 
-    val LONG_TYPE: Int = 8
+    const val LONG_TYPE: Int = 8
 }
