@@ -11,11 +11,15 @@ import android.opengl.GLES20.glClearColor
 import android.opengl.GLES20.glDrawArrays
 import android.opengl.GLES20.glEnableVertexAttribArray
 import android.opengl.GLES20.glGetAttribLocation
+import android.opengl.GLES20.glGetUniformLocation
+import android.opengl.GLES20.glUniformMatrix4fv
 import android.opengl.GLES20.glUseProgram
 import android.opengl.GLES20.glVertexAttribPointer
 import android.opengl.GLES20.glViewport
 import android.opengl.GLSurfaceView
+import android.opengl.Matrix
 import com.lyell.opengllearn.R
+import com.lyell.opengllearn.component.logger
 import com.lyell.opengllearn.utils.ByteLength
 import com.lyell.opengllearn.utils.GLSLUtils
 import com.lyell.opengllearn.utils.ShaderUtils
@@ -39,11 +43,11 @@ class Render5(private val context: Context) : GLSurfaceView.Renderer {
     private val vertexPoints: FloatArray = floatArrayOf(
         // triangle fan, 坐标值 x,y,r,g,b
         0f, 0f, 1f, 1f, 1f,
-        -0.5f, -0.5f, 0.7f, 0.7f, 0.7f,
-        0.5f, -0.5f, 0.7f, 0.7f, 0.7f,
-        0.5f, 0.5f, 0.7f, 0.7f, 0.7f,
-        -0.5f, 0.5f, 0.7f, 0.7f, 0.7f,
-        -0.5f, -0.5f, 0.7f, 0.7f, 0.7f,
+        -0.5f, -0.8f, 0.7f, 0.7f, 0.7f,
+        0.5f, -0.8f, 0.7f, 0.7f, 0.7f,
+        0.5f, 0.8f, 0.7f, 0.7f, 0.7f,
+        -0.5f, 0.8f, 0.7f, 0.7f, 0.7f,
+        -0.5f, -0.8f, 0.7f, 0.7f, 0.7f,
 
         // 线段点
         -0.5f, 0f, 1f, 0f, 0f,
@@ -55,11 +59,15 @@ class Render5(private val context: Context) : GLSurfaceView.Renderer {
 
     )
 
+    private val projectionMatrix: FloatArray = FloatArray(16)
+
     private val vertexBuffer = VertexBuffer.createFloat(vertexPoints.size, ByteLength.FLOAT_TYPE)
 
     private var aPosition: Int = 0
 
     private var aColor: Int = 0
+
+    private var uMatrix: Int = 0
 
     init {
         vertexBuffer.put(vertexPoints)
@@ -69,12 +77,13 @@ class Render5(private val context: Context) : GLSurfaceView.Renderer {
     override fun onSurfaceCreated(gl: GL10?, config: EGLConfig?) {
         glClearColor(0.0f, 0.0f, 0.0f, 0f)
 
-        val vertexShaderSrc = GLSLUtils.readStringFromRaw(context, R.raw.render4_vertex_shader)
-        val fragmentShaderSrc = GLSLUtils.readStringFromRaw(context, R.raw.render4_fragment_shader)
+        val vertexShaderSrc = GLSLUtils.readStringFromRaw(context, R.raw.render5_vertex_shader)
+        val fragmentShaderSrc = GLSLUtils.readStringFromRaw(context, R.raw.render5_fragment_shader)
         val programId = ShaderUtils.createProgram(vertexShaderSrc, fragmentShaderSrc)
         glUseProgram(programId)
         aPosition = glGetAttribLocation(programId, "a_Position")
         aColor = glGetAttribLocation(programId, "a_Color")
+        uMatrix = glGetUniformLocation(programId, "u_Matrix")
 
         // stride 跨距 以字节为单位
         glVertexAttribPointer(
@@ -100,10 +109,34 @@ class Render5(private val context: Context) : GLSurfaceView.Renderer {
 
     override fun onSurfaceChanged(gl: GL10?, width: Int, height: Int) {
         glViewport(0, 0, width, height)
+        val aspectRatio: Float = if (width > height) {
+            (width / height).toFloat()
+        } else {
+            (height / width).toFloat()
+        }
+        logger.d("onSurfaceChanged: width=$width; height=$height")
+        logger.d("onSurfaceChanged: aspectRatio=$aspectRatio")
+        // 创建正交投影，屏幕短的一遍 设置为 -1 到 1；长的一遍按比例
+        if (width > height) {
+            // 横屏
+            Matrix.orthoM(projectionMatrix, 0, -aspectRatio, aspectRatio, -1f, 1f, -1f, 1f)
+        } else {
+            // 竖屏
+            Matrix.orthoM(projectionMatrix, 0, -1f, 1f, -aspectRatio, aspectRatio, -1f, 1f)
+        }
+        // [
+        // 1.0, 0.0, 0.0, 0.0,
+        // 0.0, 0.5, 0.0, 0.0,
+        // 0.0, 0.0, -1.0, 0.0,
+        // -0.0, -0.0, -0.0, 1.0
+        // ]
+        logger.d("onSurfaceChanged: projectionMatrix=${projectionMatrix.toList()}")
     }
 
     override fun onDrawFrame(gl: GL10?) {
         glClear(GL_COLOR_BUFFER_BIT)
+
+        glUniformMatrix4fv(uMatrix, 1, false, projectionMatrix, 0)
 
         glDrawArrays(GL_TRIANGLE_FAN, 0, 6)
 
