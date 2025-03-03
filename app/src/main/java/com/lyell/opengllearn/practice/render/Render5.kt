@@ -110,9 +110,9 @@ class Render5(private val context: Context) : GLSurfaceView.Renderer {
     override fun onSurfaceChanged(gl: GL10?, width: Int, height: Int) {
         glViewport(0, 0, width, height)
         val aspectRatio: Float = if (width > height) {
-            (width / height).toFloat()
+            (width / height.toFloat())
         } else {
-            (height / width).toFloat()
+            (height / width.toFloat())
         }
         logger.d("onSurfaceChanged: width=$width; height=$height")
         logger.d("onSurfaceChanged: aspectRatio=$aspectRatio")
