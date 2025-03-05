@@ -62,9 +62,6 @@ object TextureUtils {
         // 生成纹理
         glGenerateMipmap(GL_TEXTURE_2D)
 
-        // 解除纹理绑定，原来传入 id ，现在传入0表示没有
-        glBindTexture(GL_TEXTURE_2D, 0)
-
         bitmap.recycle()
         return id
     }

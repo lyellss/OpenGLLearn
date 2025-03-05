@@ -304,3 +304,120 @@ glDisableClientState(GL_VERTEX_ARRAY);
 
 `glDrawElements` 是OpenGL
 ES中一个高效的绘图函数，通过使用索引数组，可以减少顶点数据的冗余，提高绘图性能。掌握其参数和使用方法，可以帮助你在Android开发中实现复杂的图形绘制。
+
+# glUniformMatrix4fv
+
+`glUniformMatrix4fv` 是 OpenGL 中用于向着色器传递 4x4 矩阵数据的函数。
+
+## 函数签名
+
+```c
+void glUniformMatrix4fv(GLint location, GLsizei count, GLboolean transpose, const GLfloat *value);
+```
+
+## 参数解释
+
+1. **location**：uniform 变量在着色器程序中的位置，通过 `glGetUniformLocation` 获取
+2. **count**：要传递的矩阵数量，通常为 1（单个矩阵）
+3. **transpose**：是否需要转置矩阵
+    - `GL_FALSE`：矩阵按列主序存储（OpenGL 默认方式）
+    - `GL_TRUE`：矩阵按行主序存储
+4. **value**：指向矩阵数据的指针，通常是一个包含 16 个浮点数的数组
+
+## 使用示例
+
+### 1. 基本使用
+
+```java
+// 在着色器中定义 uniform 变量
+// uniform mat4 uMVPMatrix;
+
+// 获取 uniform 变量位置
+int mvpMatrixHandle = GLES20.glGetUniformLocation(programHandle, "uMVPMatrix");
+
+// 创建并设置 MVP 矩阵
+float[] mvpMatrix = new float[16];
+Matrix.
+
+setIdentityM(mvpMatrix, 0);
+// ... 进行矩阵变换操作 ...
+
+// 将矩阵传递给着色器
+GLES20.
+
+glUniformMatrix4fv(mvpMatrixHandle, 1,false,mvpMatrix, 0);
+```
+
+### 2. 完整渲染示例
+
+```java
+public void onDrawFrame(GL10 unused) {
+    // 清除屏幕
+    GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
+
+    // 设置相机位置
+    Matrix.setLookAtM(viewMatrix, 0,
+            0, 0, -3,  // 相机位置
+            0, 0, 0,   // 观察点
+            0, 1, 0);  // 上方向
+
+    // 计算投影和视图变换
+    Matrix.multiplyMM(mvpMatrix, 0, projectionMatrix, 0, viewMatrix, 0);
+
+    // 应用模型旋转
+    Matrix.setRotateM(modelMatrix, 0, angle, 0, 1, 0);
+    Matrix.multiplyMM(mvpMatrix, 0, mvpMatrix, 0, modelMatrix, 0);
+
+    // 使用着色器程序
+    GLES20.glUseProgram(programHandle);
+
+    // 获取 uniform 变量位置
+    int mvpMatrixHandle = GLES20.glGetUniformLocation(programHandle, "uMVPMatrix");
+
+    // 设置顶点属性
+    // ... 设置顶点位置、颜色等 ...
+
+    // 传递 MVP 矩阵
+    GLES20.glUniformMatrix4fv(mvpMatrixHandle, 1, false, mvpMatrix, 0);
+
+    // 绘制
+    GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, vertexCount);
+}
+```
+
+### 3. 着色器中的使用
+
+```glsl
+// 顶点着色器
+uniform mat4 uMVPMatrix;
+attribute vec4 vPosition;
+attribute vec4 aColor;
+varying vec4 vColor;
+
+void main() {
+    gl_Position = uMVPMatrix * vPosition;
+    vColor = aColor;
+}
+```
+
+## 常见矩阵类型
+
+1. **模型矩阵(Model Matrix)**：将物体从局部坐标转换到世界坐标
+2. **视图矩阵(View Matrix)**：将世界坐标转换到相机坐标
+3. **投影矩阵(Projection Matrix)**：将相机坐标转换到裁剪坐标
+4. **MVP矩阵**：模型-视图-投影矩阵的组合
+
+## 注意事项
+
+1. **矩阵顺序**：在 OpenGL 中，变换顺序是从右到左的，例如 `MVP = P * V * M`
+2. **转置参数**：通常设为 `false`，因为 OpenGL 默认使用列主序
+3. **性能考虑**：尽量减少 `glUniformMatrix4fv` 的调用次数，可以在 CPU 端合并矩阵
+4. **错误检查**：调用后检查 `glGetError()` 可以帮助调试
+
+## 常见问题
+
+1. **矩阵不起作用**：检查 uniform 位置是否正确获取
+2. **图像变形**：检查投影矩阵的设置，特别是宽高比
+3. **物体不可见**：检查相机位置和方向
+
+通过正确使用 `glUniformMatrix4fv`，你可以实现物体的平移、旋转、缩放以及正确的 3D 投影效果。
