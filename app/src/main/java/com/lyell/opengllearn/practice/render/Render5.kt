@@ -20,7 +20,6 @@ import android.opengl.GLSurfaceView
 import android.opengl.Matrix
 import com.lyell.opengllearn.R
 import com.lyell.opengllearn.component.logger
-import com.lyell.opengllearn.utils.ByteLength
 import com.lyell.opengllearn.utils.GLSLUtils
 import com.lyell.opengllearn.utils.ShaderUtils
 import com.lyell.opengllearn.utils.VertexBuffer
@@ -37,7 +36,7 @@ class Render5(private val context: Context) : GLSurfaceView.Renderer {
         const val POSITION_COMPONENT_COUNT = 2
         const val COLOR_COMPONENT_COUNT = 3
         const val STRIDE =
-            (POSITION_COMPONENT_COUNT + COLOR_COMPONENT_COUNT) * ByteLength.FLOAT_TYPE
+            (POSITION_COMPONENT_COUNT + COLOR_COMPONENT_COUNT) * VertexBuffer.FLOAT_TYPE
     }
 
     private val vertexPoints: FloatArray = floatArrayOf(
@@ -61,18 +60,13 @@ class Render5(private val context: Context) : GLSurfaceView.Renderer {
 
     private val projectionMatrix: FloatArray = FloatArray(16)
 
-    private val vertexBuffer = VertexBuffer.createFloat(vertexPoints.size, ByteLength.FLOAT_TYPE)
+    private val vertexBuffer = VertexBuffer.createFloat(vertexPoints)
 
     private var aPosition: Int = 0
 
     private var aColor: Int = 0
 
     private var uMatrix: Int = 0
-
-    init {
-        vertexBuffer.put(vertexPoints)
-        vertexBuffer.position(0)
-    }
 
     override fun onSurfaceCreated(gl: GL10?, config: EGLConfig?) {
         glClearColor(0.0f, 0.0f, 0.0f, 0f)
