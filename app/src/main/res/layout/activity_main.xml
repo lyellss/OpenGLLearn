@@ -13,18 +13,5 @@
         android:layout_height="0dp"
         android:layout_weight="1" />
 
-    <com.lyell.opengllearn.practice.PracticeGLSurfaceView
-        android:id="@+id/view2"
-
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1" />
-
-    <com.lyell.opengllearn.practice.PracticeGLSurfaceView
-        android:id="@+id/view3"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1" />
-
 
 </LinearLayout>

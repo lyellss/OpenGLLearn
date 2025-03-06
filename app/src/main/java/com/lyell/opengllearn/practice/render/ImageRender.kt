@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.BitmapFactory
 import android.opengl.GLES20.GL_COLOR_BUFFER_BIT
 import android.opengl.GLES20.GL_FLOAT
+import android.opengl.GLES20.GL_TEXTURE0
 import android.opengl.GLES20.GL_TEXTURE_2D
 import android.opengl.GLES20.GL_TRIANGLE_STRIP
 import android.opengl.GLES20.GL_UNSIGNED_SHORT
@@ -64,7 +65,9 @@ class ImageRender(val context: Context) : GLSurfaceView.Renderer {
 
     private val drawOrderBuffer = VertexBuffer.createShort(drawOrder)
 
-    private var textureId: Int = 0
+    private var textureId1: Int = 0
+    private var textureId2: Int = 0
+    private var tempTextureId: Int = 0
 
     private var programId: Int = 0
 
@@ -85,9 +88,12 @@ class ImageRender(val context: Context) : GLSurfaceView.Renderer {
     private val translateY = 0.0f
     private val translateSpeed = 0.02f
 
+    private var viewWidth: Int = 0
+    private var viewHeight: Int = 0
+
     override fun onSurfaceCreated(gl: GL10?, config: EGLConfig?) {
         logger.d("onSurfaceCreated: ")
-        glClearColor(0f, 0f, 0f, 1f)
+        glClearColor(1f, 1f, 1f, 1f)
 
         val vertexSrc = GLSLUtils.readStringFromRaw(context, R.raw.image_vertex_shader)
         val fragmentSrc = GLSLUtils.readStringFromRaw(context, R.raw.image_fragment_shader)
@@ -117,34 +123,49 @@ class ImageRender(val context: Context) : GLSurfaceView.Renderer {
         )
         glEnableVertexAttribArray(aTextureCoordinate)
 
-
-        val bitmap = BitmapFactory.decodeResource(context.resources, R.drawable.desk)
-        textureId = TextureUtils.createTexture(bitmap)
+        var bitmap = BitmapFactory.decodeResource(context.resources, R.drawable.image1)
+        textureId1 = TextureUtils.createTexture(bitmap)
+        bitmap = BitmapFactory.decodeResource(context.resources, R.drawable.image2)
+        textureId2 = TextureUtils.createTexture(bitmap)
     }
 
     override fun onSurfaceChanged(gl: GL10?, width: Int, height: Int) {
         logger.d("onSurfaceChanged: ")
-        glViewport(0, 0, width, height)
+        viewWidth = width
+        viewHeight = height
+        glViewport(0, 0, viewWidth, viewHeight)
     }
 
     override fun onDrawFrame(gl: GL10?) {
         logger.d("onDrawFrame: ")
         glClear(GL_COLOR_BUFFER_BIT)
-        drawTexture(textureId)
-    }
 
-    fun drawTexture(textureId: Int) {
-        glActiveTexture(textureId)
-        glBindTexture(GL_TEXTURE_2D, textureId)
+        // 绘制第一张图
         Matrix.setIdentityM(matrix, 0)
+        Matrix.translateM(matrix, 0, translateX, 0f, 0f)
+        glUniformMatrix4fv(uMatrix, 1, false, matrix, 0)
+
+        glActiveTexture(GL_TEXTURE0)
+        glBindTexture(GL_TEXTURE_2D, textureId1)
+        glDrawElements(GL_TRIANGLE_STRIP, drawOrder.size, GL_UNSIGNED_SHORT, drawOrderBuffer)
+
+        // 绘制第二张图
+        Matrix.setIdentityM(matrix, 0)
+        Matrix.translateM(matrix, 0, translateX - 2f, 0f, 0f)
+        glUniformMatrix4fv(uMatrix, 1, false, matrix, 0)
+
+        glBindTexture(GL_TEXTURE_2D, textureId2)
+        glDrawElements(GL_TRIANGLE_STRIP, drawOrder.size, GL_UNSIGNED_SHORT, drawOrderBuffer)
+
+        // 更新位移
         translateX += translateSpeed
         if (translateX > 2f) {
-            translateX = -2f
+            translateX -= 2f
+            // 交换纹理
+            tempTextureId = textureId1
+            textureId1 = textureId2
+            textureId2 = tempTextureId
         }
-        Matrix.translateM(matrix, 0, translateX, 0f, 0f)
-
-        glUniformMatrix4fv(uMatrix, 1, false, matrix, 0)
-        glDrawElements(GL_TRIANGLE_STRIP, drawOrder.size, GL_UNSIGNED_SHORT, drawOrderBuffer)
     }
 
     fun release() {
@@ -152,7 +173,7 @@ class ImageRender(val context: Context) : GLSurfaceView.Renderer {
         glDisableVertexAttribArray(aTextureCoordinate)
         // 解除纹理绑定，原来传入 id ，现在传入0表示没有
         glBindTexture(GL_TEXTURE_2D, 0)
-        glDeleteTextures(1, intArrayOf(textureId), 0)
+        glDeleteTextures(2, intArrayOf(textureId1, textureId2), 0)
         glDeleteProgram(programId)
     }
 
