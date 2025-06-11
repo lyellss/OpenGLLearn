@@ -30,7 +30,7 @@ import com.lyell.opengllearn.component.logger
 import com.lyell.opengllearn.utils.GLSLUtils
 import com.lyell.opengllearn.utils.ShaderUtils
 import com.lyell.opengllearn.utils.TextureUtils
-import com.lyell.opengllearn.utils.VertexBuffer
+import com.lyell.opengllearn.utils.VertexBufferUtils
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
 
@@ -59,11 +59,11 @@ class ImageRender(val context: Context) : GLSurfaceView.Renderer {
     // 四个顶点的绘制顺序数组
     private val drawOrder = shortArrayOf(0, 1, 2, 0, 2, 3)
 
-    private val textureBuffer = VertexBuffer.createFloat(textureVertexData)
+    private val textureBuffer = VertexBufferUtils.createFloat(textureVertexData)
 
-    private val squareBuffer = VertexBuffer.createFloat(squareVertexData)
+    private val squareBuffer = VertexBufferUtils.createFloat(squareVertexData)
 
-    private val drawOrderBuffer = VertexBuffer.createShort(drawOrder)
+    private val drawOrderBuffer = VertexBufferUtils.createShort(drawOrder)
 
     private var textureId1: Int = 0
     private var textureId2: Int = 0

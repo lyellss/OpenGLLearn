@@ -5,7 +5,7 @@ import java.nio.ByteOrder
 import java.nio.FloatBuffer
 import java.nio.ShortBuffer
 
-object VertexBuffer {
+object VertexBufferUtils {
 
     const val FLOAT_TYPE: Int = 4
 

@@ -22,7 +22,7 @@ import com.lyell.opengllearn.R
 import com.lyell.opengllearn.component.logger
 import com.lyell.opengllearn.utils.GLSLUtils
 import com.lyell.opengllearn.utils.ShaderUtils
-import com.lyell.opengllearn.utils.VertexBuffer
+import com.lyell.opengllearn.utils.VertexBufferUtils
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
 
@@ -36,7 +36,7 @@ class Render5(private val context: Context) : GLSurfaceView.Renderer {
         const val POSITION_COMPONENT_COUNT = 2
         const val COLOR_COMPONENT_COUNT = 3
         const val STRIDE =
-            (POSITION_COMPONENT_COUNT + COLOR_COMPONENT_COUNT) * VertexBuffer.FLOAT_TYPE
+            (POSITION_COMPONENT_COUNT + COLOR_COMPONENT_COUNT) * VertexBufferUtils.FLOAT_TYPE
     }
 
     private val vertexPoints: FloatArray = floatArrayOf(
@@ -60,7 +60,7 @@ class Render5(private val context: Context) : GLSurfaceView.Renderer {
 
     private val projectionMatrix: FloatArray = FloatArray(16)
 
-    private val vertexBuffer = VertexBuffer.createFloat(vertexPoints)
+    private val vertexBuffer = VertexBufferUtils.createFloat(vertexPoints)
 
     private var aPosition: Int = 0
 
